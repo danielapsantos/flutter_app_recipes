@@ -1,10 +1,14 @@
 import 'package:flutter_app_recipes/data/models/recipe.dart';
+import 'package:flutter_app_recipes/data/repositories/auth_repository.dart';
 import 'package:flutter_app_recipes/data/repositories/recipe_repository.dart';
 import 'package:flutter_app_recipes/di/service_locator.dart';
+import 'package:either_dart/either.dart';
 import 'package:get/get.dart';
 
 class RecipeDetailViewModel extends GetxController {
   final _repository = getIt<RecipeRepository>();
+  final _authRepository = getIt<AuthRepository>();
+
   // Estados
   final Rxn<Recipe> _recipe = Rxn<Recipe>();
   final RxBool _isLoading = false.obs;
@@ -23,9 +27,12 @@ class RecipeDetailViewModel extends GetxController {
       _errorMessage.value = '';
       _recipe.value = await _repository.getRecipeById(id);
 
-      final userId = recipe!.userId;
+      var userId = '';
+      await _authRepository.currentUser.fold(
+        (left) => _errorMessage.value = left.message,
+        (right) => userId = right.id,
+      );
       _isFavorite.value = await isRecipeFavorite(id, userId);
-
     } catch (e) {
       _errorMessage.value = 'Falha ao buscar receita: ${e.toString()}';
     } finally {
@@ -49,77 +56,33 @@ class RecipeDetailViewModel extends GetxController {
   }
 
   Future<void> toggleFavorite() async {
-    final currentUserId = recipe!.userId;
-
-
-
+    var userId = '';
+      await _authRepository.currentUser.fold(
+        (left) => _errorMessage.value = left.message,
+        (right) => userId = right.id,
+      );
     final recipeId = recipe!.id;
 
-
-
-
     if (_isFavorite.value) {
-
-
-      await removeFromFavorites(recipeId, currentUserId);
-
-
+      await removeFromFavorites(recipeId, userId);
     } else {
-
-
-      await addToFavorites(recipeId, currentUserId);
-
-
+      await addToFavorites(recipeId, userId);
     }
-
-
   }
-
-
-
-
 
   Future<void> addToFavorites(String recipeId, String userId) async {
-
-
     try {
-
-
       _isLoading.value = true;
-
-
       _errorMessage.value = '';
-
-
       await _repository.insertFavRecipe(recipeId, userId);
-
-
       _isFavorite.value = true;
-
-
     } catch (e) {
-
-
       _errorMessage.value =
-
-
           'Falha ao adicionar receita favorita: ${e.toString()}';
-
-
     } finally {
-
-
       _isLoading.value = false;
-
-
     }
-
-
   }
-
-
-
-
 
   Future<void> removeFromFavorites(String recipeId, String userId) async {
     try {
