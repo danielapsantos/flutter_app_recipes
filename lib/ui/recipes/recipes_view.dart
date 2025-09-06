@@ -12,15 +12,35 @@ class RecipesView extends StatefulWidget {
   State<RecipesView> createState() => _RecipesViewState();
 }
 
-class _RecipesViewState extends State<RecipesView> {
+class _RecipesViewState extends State<RecipesView>
+    with SingleTickerProviderStateMixin {
   final viewModel = getIt<RecipesViewModel>();
+
+  late AnimationController _animationController;
+  late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+
+    _animation = Tween(begin: 0.0, end: 200.0).animate(_animationController)
+      ..addListener(() => setState(() {}));
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       viewModel.getRecipes();
+      _animationController.forward();
     });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -35,136 +55,93 @@ class _RecipesViewState extends State<RecipesView> {
           ),
         );
       }
+
       if (viewModel.errorMessage != '') {
         return Center(
-          child: Container(
-            padding: EdgeInsets.all(32),
+          child: Padding(
+            padding: const EdgeInsets.all(32),
             child: Column(
-              spacing: 32,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   'Erro: ${viewModel.errorMessage}',
-                  style: TextStyle(fontSize: 24),
+                  style: const TextStyle(fontSize: 24),
                 ),
+                const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () {
                     viewModel.getRecipes();
                   },
-                  child: Text('TRY AGAIN'),
+                  child: const Text('TRY AGAIN'),
                 ),
               ],
             ),
           ),
         );
       }
-      return Container(
-        padding: EdgeInsets.all(16),
+
+      return Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             Expanded(
-              child: 
-              viewModel.recipes.isNotEmpty
-                  ? Center(
-                      child: Column(
-                        children: [
-                          Text(
-                            '${viewModel.recipes.length} receitas(s)',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+              child: viewModel.recipes.isNotEmpty
+                  ? Column(
+                      children: [
+                        Text(
+                          '${viewModel.recipes.length} receita(s)',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
-                          const SizedBox(height: 16),
-                          Expanded(
+                        ),
+                        const SizedBox(height: 16),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 200 - _animation.value),
                             child: ListView.builder(
                               itemCount: viewModel.recipes.length,
                               itemBuilder: (context, index) {
                                 final recipe = viewModel.recipes[index];
-                                // final isFavorite = viewModel.favRecipes.any(
-                                //   (fav) => fav.id == recipe.id,
-                                // );
+
+                                // Se quiser usar favoritos futuramente:
+                                // final isFavorite = viewModel.favRecipes.any((fav) => fav.id == recipe.id);
+
                                 return Stack(
                                   children: [
                                     GestureDetector(
-                                      onTap: () =>
-                                          context.go('/recipe/${recipe.id}'),
+                                      onTap: () => context.go('/recipe/${recipe.id}'),
                                       child: RecipeCard(recipe: recipe),
                                     ),
-                                    // Positioned(
-                                    //   top: 16,
-                                    //   right: 16,
-                                    //   child: IconButton(
-                                    //     icon: Icon(
-                                    //       isFavorite
-                                    //           ? Icons.favorite
-                                    //           : Icons.favorite_border,
-                                    //       size: 32,
-                                    //       color: isFavorite ? Colors.red : null,
-                                    //     ),
-                                    //     onPressed: () {
-                                    //       if (isFavorite) {
-                                    //         viewModel.removeFromFavorites(
-                                    //           recipe,
-                                    //         );
-                                    //         if (context.mounted) {
-                                    //           ScaffoldMessenger.of(
-                                    //             context,
-                                    //           ).clearSnackBars();
-                                    //           ScaffoldMessenger.of(
-                                    //             context,
-                                    //           ).showSnackBar(
-                                    //             SnackBar(
-                                    //               content: Text(
-                                    //                 '${recipe.name} desfavoritada!',
-                                    //               ),
-                                    //               duration: Duration(
-                                    //                 seconds: 3,
-                                    //               ),
-                                    //               action: SnackBarAction(
-                                    //                 label: 'DESFAZER',
-                                    //                 onPressed: () {
-                                    //                   viewModel.addToFavorites(
-                                    //                     recipe,
-                                    //                   );
-                                    //                 },
-                                    //               ),
-                                    //             ),
-                                    //           );
-                                    //         }
-                                    //       } else {
-                                    //         viewModel.addToFavorites(recipe);
-                                    //         if (context.mounted) {
-                                    //           ScaffoldMessenger.of(
-                                    //             context,
-                                    //           ).clearSnackBars();
-                                    //           ScaffoldMessenger.of(
-                                    //             context,
-                                    //           ).showSnackBar(
-                                    //             SnackBar(
-                                    //               content: Text(
-                                    //                 '${recipe.name} favoritada!',
-                                    //               ),
-                                    //               duration: const Duration(
-                                    //                 seconds: 2,
-                                    //               ),
-                                    //             ),
-                                    //           );
-                                    //         }
-                                    //       }
-                                    //     },
-                                    //   ),
-                                    // ),
+
+                                    // Aqui você pode descomentar o bloco de favoritos se quiser implementar:
+                                    /*
+                                    Positioned(
+                                      top: 16,
+                                      right: 16,
+                                      child: IconButton(
+                                        icon: Icon(
+                                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                                          size: 32,
+                                          color: isFavorite ? Colors.red : null,
+                                        ),
+                                        onPressed: () {
+                                          // lógica de adicionar/remover favorito
+                                        },
+                                      ),
+                                    ),
+                                    */
                                   ],
                                 );
                               },
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     )
-                  : 
-                  Center(
+                  : Center(
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const SizedBox(height: 64),
                           Icon(
@@ -173,7 +150,7 @@ class _RecipesViewState extends State<RecipesView> {
                             color: Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(height: 32),
-                          Text(
+                          const Text(
                             'Adicione suas receitas favoritas!',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
