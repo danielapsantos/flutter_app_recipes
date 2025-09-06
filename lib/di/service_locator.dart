@@ -1,5 +1,6 @@
 import 'package:flutter_app_recipes/data/repositories/recipe_repository.dart';
 import 'package:flutter_app_recipes/data/services/recipe_service.dart';
+import 'package:flutter_app_recipes/ui/recipes/recipesdetail/recipe_detail_viewmodel.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_app_recipes/ui/recipes/recipes_viewmodel.dart';
@@ -20,4 +21,7 @@ Future<void> setupDependencies() async {
 
   // Recipe ViewModel
   getIt.registerLazySingleton<RecipesViewModel>(() => RecipesViewModel());
+
+  //Recipe ViewModelDetail
+  getIt.registerLazySingleton<RecipeDetailViewModel>(() => RecipeDetailViewModel());
 }

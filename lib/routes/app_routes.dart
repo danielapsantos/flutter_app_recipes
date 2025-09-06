@@ -1,5 +1,6 @@
 import 'package:flutter_app_recipes/ui/base_screen.dart';
 import 'package:flutter_app_recipes/ui/recipes/recipes_view.dart';
+import 'package:flutter_app_recipes/ui/recipes/recipesdetail/recipe_detail_view.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRouter {
@@ -13,6 +14,11 @@ class AppRouter {
           builder: (context, state, child) => BaseScreen(child: child),
           routes: [
             GoRoute(path: '/', builder: (context, state) => RecipesView()),
+            GoRoute(
+              path: '/recipe/:id',
+              builder: (context, state) =>
+                RecipeDetailView(id: state.pathParameters['id']!),
+            ),
           ],
         ),
       ],
