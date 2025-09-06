@@ -1,77 +1,22 @@
+import 'package:flutter_app_recipes/utils/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 
-class CustomTheme {
-  // Default color value
-  Color color;
+// * GetxController
+// Usado para gerenciar o estado
+class CustomThemeController extends GetxController {
 
-  // Uso de late para inicializar as propriedades posteriormente
-  late ColorScheme colorScheme;
-  late ColorScheme colorSchemeDark;
-  late ThemeData customTheme;
-  late ThemeData customThemeDark;
+  // * GetX Reactive Variables
+  // Usado para gerenciar o estado isDark
+  // obs - é um método do GetX que torna a variável reativa
+  // value - é usado para acessar o valor da variável reativa
+  RxBool isDark = true.obs;
+  CustomTheme myTheme = CustomTheme(color: Colors.blueGrey);
+  ThemeData get customTheme => myTheme.customTheme;
+  ThemeData get customThemeDark => myTheme.customThemeDark;
+  ThemeMode get themeMode => isDark.value ? ThemeMode.dark : ThemeMode.light;
 
-  CustomTheme({required this.color}) {
-    colorScheme = ColorScheme.fromSeed(
-      seedColor: color,
-      brightness: Brightness.light,
-    );
-
-    colorSchemeDark = ColorScheme.fromSeed(
-      seedColor: color,
-      brightness: Brightness.dark,
-    );
-
-    customTheme = ThemeData(
-      colorScheme: colorScheme,
-      fontFamily: GoogleFonts.montserrat().fontFamily,
-      appBarTheme: AppBarTheme(
-        centerTitle: true,
-        toolbarHeight: 100,
-        backgroundColor: colorScheme.primary,
-        titleTextStyle: GoogleFonts.lobster(
-          fontSize: 36,
-          fontWeight: FontWeight.bold,
-          color: colorScheme.onPrimary,
-        ),
-        iconTheme: IconThemeData(
-          color: colorScheme.onPrimary,
-          size: 36,
-        ),
-      ),
-      cardTheme: CardThemeData(
-        color: colorScheme.secondaryContainer,
-        shadowColor: colorScheme.onSurface,
-        elevation: 5,
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
-    );
-
-    customThemeDark = ThemeData(
-      colorScheme: colorSchemeDark,
-      fontFamily: GoogleFonts.montserrat().fontFamily,
-      appBarTheme: AppBarTheme(
-        centerTitle: true,
-        toolbarHeight: 100,
-        backgroundColor: colorSchemeDark.onPrimary,
-        titleTextStyle: GoogleFonts.lobster(
-          fontSize: 36,
-          fontWeight: FontWeight.bold,
-          color: colorSchemeDark.primary,
-        ),
-        iconTheme: IconThemeData(
-          color: colorScheme.onPrimary,
-          size: 36,
-        ),
-      ),
-      cardTheme: CardThemeData(
-        color: colorSchemeDark.secondaryContainer,
-        shadowColor: colorSchemeDark.onSurface,
-        elevation: 5,
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
-    );
+  void toogleTheme() {
+    isDark.value = !isDark.value;
   }
 }
