@@ -1,4 +1,6 @@
+import 'package:flutter_app_recipes/data/repositories/auth_repository.dart';
 import 'package:flutter_app_recipes/data/repositories/recipe_repository.dart';
+import 'package:flutter_app_recipes/data/services/auth_service.dart';
 import 'package:flutter_app_recipes/data/services/recipe_service.dart';
 import 'package:flutter_app_recipes/ui/auth/auth_viewmodel.dart';
 import 'package:flutter_app_recipes/ui/fav_recipes/fav_recipes_viewmodel.dart';
@@ -15,11 +17,13 @@ Future<void> setupDependencies() async {
   // SupabaseClient
   getIt.registerSingleton<SupabaseClient>(Supabase.instance.client);
 
-  //Recipe Service
+  // Services
   getIt.registerLazySingleton<RecipeService>(() => RecipeService());
+  getIt.registerLazySingleton<AuthService>(() => AuthService());
 
-  // Recipe Repository
+  // Repositories
   getIt.registerLazySingleton<RecipeRepository>(() => RecipeRepository());
+  getIt.registerLazySingleton<AuthRepository>(() => AuthRepository());
 
   // Recipe ViewModel
   getIt.registerLazySingleton<RecipesViewModel>(() => RecipesViewModel());
