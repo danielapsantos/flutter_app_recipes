@@ -62,6 +62,8 @@ class Recipe {
       mealType: _parseJsonListOptional(json['meal_type']),
     );
   }
+  
+  get value => null;
 
   // Recipe -> JSON
   Map<String, dynamic> toJson() {

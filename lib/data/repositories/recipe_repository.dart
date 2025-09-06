@@ -25,4 +25,10 @@ class RecipeRepository {
       .map((data) => Recipe.fromJson(data['recipes'] as Map<String, dynamic>))
       .toList();
   }
+  Future<void> insertFavRecipe(String recipeId, String userId) async {
+    await _service.insertFavRecipe(recipeId, userId);
+  }
+  Future<void> deleteFavRecipe(String recipeId, String userId) async {
+    await _service.deleteFavRecipe(recipeId, userId);
+  }
 }
