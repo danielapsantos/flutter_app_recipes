@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'auth_viewmodel.dart';
 
-
 class AuthView extends StatefulWidget {
   const AuthView({super.key});
 
@@ -12,30 +11,18 @@ class AuthView extends StatefulWidget {
   State<AuthView> createState() => _AuthViewState();
 }
 
-class _AuthViewState extends State<AuthView>
-    with SingleTickerProviderStateMixin {
+class _AuthViewState extends State<AuthView> with SingleTickerProviderStateMixin {
   final viewModel = getIt<AuthViewModel>();
-
   late AnimationController _animationController;
-  late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    _animationController =
-        AnimationController(
-          vsync: this,
-          duration: const Duration(milliseconds: 1000),
-        )..addStatusListener((listener) {
-          if (listener == AnimationStatus.completed) {
-            _animationController.reverse();
-          } else if (listener == AnimationStatus.dismissed) {
-            _animationController.forward();
-          }
-        });
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
 
-    _animation = Tween(begin: 50.0, end: 200.0).animate(_animationController);
-    _animation.addListener(() => setState(() {}));
     _animationController.forward();
   }
 
@@ -71,7 +58,7 @@ class _AuthViewState extends State<AuthView>
                       const SizedBox(height: 16),
                       _buildAvatarUrlField(),
                     ],
-                    const SizedBox(height: 32,),
+                    const SizedBox(height: 32),
                     _buildErrorMessage(),
                     const SizedBox(height: 32),
                     _buildSubmitButton(),
@@ -90,7 +77,7 @@ class _AuthViewState extends State<AuthView>
   Widget _buildHeader() {
     return Column(
       children: [
-       _animatedLogo(controller: _animationController),
+        _animatedLogo(controller: _animationController),
         const SizedBox(height: 16),
         Text(
           'I love Cooking',
@@ -102,31 +89,29 @@ class _AuthViewState extends State<AuthView>
         const SizedBox(height: 16),
         Text(
           viewModel.isLoginMode ? 'Entre na sua conta' : 'Crie uma nova conta',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w100),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w100),
         ),
       ],
     );
   }
-Widget _animatedLogo({required AnimationController controller}) {
+
+  Widget _animatedLogo({required AnimationController controller}) {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) {
+        final sizeTween = Tween(begin: 50.0, end: 200.0).animate(
+          CurvedAnimation(parent: controller, curve: Curves.easeInOut),
+        );
 
-        final sizeTween = Tween(
-          begin: 50.0,
-          end: 200.0,
-        ).animate(CurvedAnimation(parent: controller, curve: Curves.easeInOut));
-        
         final colorTween = ColorTween(
           begin: Theme.of(context).colorScheme.onError,
           end: Theme.of(context).colorScheme.primary,
         ).animate(CurvedAnimation(parent: controller, curve: Curves.bounceInOut));
-        
-        final angleTween = Tween(
-          begin: 0.0,
-          end: 2 * 3.14,
-        ).animate(CurvedAnimation(parent: controller, curve: Curves.easeInOut));
-        
+
+        final angleTween = Tween(begin: 0.0, end: 2 * 3.14).animate(
+          CurvedAnimation(parent: controller, curve: Curves.easeInOut),
+        );
+
         return Transform.rotate(
           angle: angleTween.value,
           child: SizedBox(
@@ -156,6 +141,7 @@ Widget _animatedLogo({required AnimationController controller}) {
       validator: viewModel.validateEmail,
     );
   }
+
   Widget _buildPasswordField() {
     return Obx(
       () => TextFormField(
@@ -271,10 +257,7 @@ Widget _animatedLogo({required AnimationController controller}) {
               )
             : Text(
                 viewModel.isLoginMode ? 'ENTRAR' : 'CADASTRAR',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
       ),
     );
